@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfIndexer", "PdfIndexer\PdfIndexer.csproj", "{FD3FE44D-8A8A-48CA-87DB-852480BD3F64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfIndexer.Tests", "PdfIndexer.Tests\PdfIndexer.Tests.csproj", "{6DB7D553-A18E-49C4-A681-8562BD6CFF3D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD3FE44D-8A8A-48CA-87DB-852480BD3F64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD3FE44D-8A8A-48CA-87DB-852480BD3F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD3FE44D-8A8A-48CA-87DB-852480BD3F64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD3FE44D-8A8A-48CA-87DB-852480BD3F64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DB7D553-A18E-49C4-A681-8562BD6CFF3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DB7D553-A18E-49C4-A681-8562BD6CFF3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DB7D553-A18E-49C4-A681-8562BD6CFF3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DB7D553-A18E-49C4-A681-8562BD6CFF3D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

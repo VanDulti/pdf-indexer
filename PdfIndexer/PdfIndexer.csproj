@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+        <RootNamespace>PdfIndexer</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Docnet.Core" Version="2.6.0" />
+        <PackageReference Include="dotnet-stop-words" Version="1.1.0" />
+        <PackageReference Include="iTextSharp.LGPLv2.Core" Version="3.4.20" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.4"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.4" PrivateAssets="all"/>
+        <PackageReference Include="PdfPig" Version="0.1.9-alpha-20240510-d86c2" />
+        <PackageReference Include="PDFsharp" Version="6.1.0-preview-3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Pages\Home.razor.js">
+        <DependentUpon>Home.razor</DependentUpon>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+</Project>

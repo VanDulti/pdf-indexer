@@ -1,0 +1,206 @@
+﻿@page "/"
+@using System.Collections.Immutable
+@using System.IO
+@using System.Text.Json
+@using System.Text.RegularExpressions
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using PdfIndexer.Data
+@using StopWord
+@inject ILogger<Home> Logger
+@inject IJSRuntime Js
+@inject IPdfReader PdfReader
+@inject IPdfWriter PdfWriter
+
+<h1>Pdf Indexer</h1>
+<h2>Upload your PDF files</h2>
+<p>Select one or more PDF files to upload and create a word index.</p>
+<InputFile OnChange="AddFiles" multiple/>
+@if (_wordIndices.Any())
+{
+    <button @onclick="DownloadPdfCombined">Combined Pdf</button>
+    <button @onclick="DownloadPdfIndicesMerged">Pdf with a single total index</button>
+    <section>
+        @foreach (var (file, wordIndex) in _wordIndices)
+        {
+            <details>
+                <summary>
+                    @file.Name
+                </summary>
+                <section>
+                    <h4>Download</h4>
+                    <p class="text-center">
+                        <button @onclick="() => DownloadIndex(file)">PDF</button>
+                        <button @onclick="() => DownloadAppended(file)">Total PDF</button>
+                        <button @onclick="() => DownloadIndexTxt(file)">.txt</button>
+                        <button @onclick="() => DownloadIndexJson(file)">.json</button>
+                        <button @onclick="() => RemoveFile(file)">Remove</button>
+                    </p>
+                </section>
+                <section>
+                    <h4>View</h4>
+                    <p>
+                        <QuickGrid Items="@wordIndex.Index.AsQueryable()" Pagination="@_pagination">
+                            <PropertyColumn Property="@(c => c.Key)"/>
+                            <PropertyColumn Property="@(c => string.Join(", ", c.Value))" Align="Align.Right"/>
+                        </QuickGrid>
+                    </p>
+                    <p>
+                        <CustomPaginator State="_pagination"/>
+                    </p>
+                </section>
+            </details>
+        }
+    </section>
+}
+
+@if (_isLoading)
+{
+    <div>Loading...</div>
+}
+
+@code {
+    private readonly IDictionary<IBrowserFile, WordIndex> _wordIndices = new Dictionary<IBrowserFile, WordIndex>();
+    private readonly PaginationState _pagination = new PaginationState { ItemsPerPage = 10 };
+    private bool _isLoading;
+
+    private async Task InvokeDownload(Stream stream, string fileName)
+    {
+        using var streamRef = new DotNetStreamReference(stream: stream, leaveOpen: false);
+        await Js.InvokeVoidAsync("Home.downloadFileFromStream", fileName, streamRef);
+    }
+
+    private void RemoveFile(IBrowserFile file)
+    {
+        _wordIndices.Remove(file);
+    }
+
+    private async Task AddFiles(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            _isLoading = true;
+            foreach (var browserFile in e.GetMultipleFiles(int.MaxValue))
+            {
+                try
+                {
+                    // TODO: parallelize all the awaits in this loop
+                    var inMemoryFile = await InMemoryFile.CopyOf(browserFile);
+                    _wordIndices[inMemoryFile] = await GenerateWordIndex(inMemoryFile);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("File: {FileName} Error: {Error}",
+                        browserFile.Name, ex.Message);
+                }
+            }
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task<WordIndex> GenerateWordIndex(IBrowserFile file)
+    {
+        await using var fileStream = file.OpenReadStream();
+        var result = new WordIndex();
+        var stopWordsEn = StopWords.GetStopWords("en");
+        var stopWords = StopWords.GetStopWords().Concat(stopWordsEn).ToImmutableHashSet();
+        try
+        {
+            var pages = PdfReader.Read(fileStream);
+            foreach (var (pageNumber, text) in pages)
+            {
+                var words = new Regex("[a-zA-ZäöüÄÖÜß]{3,}", RegexOptions.Compiled)
+                    .Matches(text)
+                    .Select(match => match.Value)
+                    .Where(word => !stopWords.Contains(word));
+                result.Add(pageNumber, words);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+        }
+
+        return result;
+    }
+
+    private async Task DownloadAppended(IBrowserFile file)
+    {
+        using var stream = new MemoryStream();
+        await PdfWriter.WriteOriginalWithIndex(stream, file.OpenReadStream(), _wordIndices[file]);
+        stream.Seek(0, SeekOrigin.Begin);
+        var newFileName = Path.GetFileNameWithoutExtension(file.Name) + "-with-index.pdf";
+        await InvokeDownload(stream, newFileName);
+    }
+
+    private async Task DownloadIndex(IBrowserFile file)
+    {
+        try
+        {
+            _isLoading = true;
+            using var stream = new MemoryStream();
+            await PdfWriter.WriteIndex(stream, _wordIndices[file]);
+            stream.Seek(0, SeekOrigin.Begin);
+            var newFileName = Path.GetFileNameWithoutExtension(file.Name) + "-index.pdf";
+            await InvokeDownload(stream, newFileName);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task DownloadIndexTxt(IBrowserFile file)
+    {
+        var entries = _wordIndices[file]
+            .Index
+            .Select(pair => $"{pair.Key}: {string.Join(", ", pair.Value)}");
+        var stream = new MemoryStream();
+        var writer = new StreamWriter(stream, leaveOpen: true);
+        foreach (var entry in entries)
+        {
+            await writer.WriteLineAsync(entry);
+        }
+
+        await writer.DisposeAsync();
+        stream.Seek(0, SeekOrigin.Begin);
+        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.Name);
+        var fileName = $"{fileNameWithoutExtension}-index.txt";
+        await InvokeDownload(stream, fileName);
+    }
+
+    private async Task DownloadIndexJson(IBrowserFile file)
+    {
+        var wordIndex = _wordIndices[file];
+        var stream = new MemoryStream();
+        await JsonSerializer.SerializeAsync(stream, wordIndex.Index);
+        stream.Seek(0, SeekOrigin.Begin);
+        var newFileName = Path.GetFileNameWithoutExtension(file.Name) + "-index.json";
+        await InvokeDownload(stream, newFileName);
+    }
+
+    private async void DownloadPdfCombined()
+    {
+        using var stream = new MemoryStream();
+        var indices = _wordIndices
+            .Select(p => (p.Key.OpenReadStream(), p.Value));
+        await PdfWriter.WriteCombined(stream, indices);
+        stream.Seek(0, SeekOrigin.Begin);
+        const string newFileName = "combined.pdf";
+        await InvokeDownload(stream, newFileName);
+    }
+
+    private async void DownloadPdfIndicesMerged()
+    {
+        using var stream = new MemoryStream();
+        var indices = _wordIndices
+            .Select(p => (p.Key.OpenReadStream(), p.Value));
+        await PdfWriter.WriteMerged(stream, indices);
+        stream.Seek(0, SeekOrigin.Begin);
+        const string newFileName = "merged-index.pdf";
+        await InvokeDownload(stream, newFileName);
+    }
+
+}

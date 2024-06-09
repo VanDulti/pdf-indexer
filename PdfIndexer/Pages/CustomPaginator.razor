@@ -1,0 +1,62 @@
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+<div class="text-center">
+    <p>
+        <button @onclick="GoToFirst">First</button>
+        <button @onclick="GoToPrevious">Previous</button>
+        <button @onclick="GoToNext">Next</button>
+        @if (State.LastPageIndex is not null)
+        {
+        <button @onclick="GoToLast">Last</button>
+        }
+    </p>
+    <p>Page @(State.CurrentPageIndex + 1) of @(State.LastPageIndex + 1)</p>
+</div>
+
+
+@code {
+    [Parameter] [EditorRequired] public required PaginationState State { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await State.SetCurrentPageIndexAsync(0);
+    }
+
+    private async Task GoToPageAsync(int capturedIndex)
+    {
+        await State.SetCurrentPageIndexAsync(capturedIndex);
+    }
+
+    private async void GoToFirst()
+    {
+        await State.SetCurrentPageIndexAsync(0);
+    }
+
+    private async void GoToPrevious()
+    {
+        if (State.CurrentPageIndex > 0)
+        {
+            await State.SetCurrentPageIndexAsync(State.CurrentPageIndex - 1);
+        }
+    }
+
+    private async void GoToNext()
+    {
+        if (State.CurrentPageIndex < State.TotalItemCount - 1)
+        {
+            await State.SetCurrentPageIndexAsync(State.CurrentPageIndex + 1);
+        }
+    }
+
+    private async void GoToLast()
+    {
+        if (State.LastPageIndex is null)
+        {
+            throw new InvalidOperationException("LastPageIndex is not set");
+        }
+
+        await State.SetCurrentPageIndexAsync(State.LastPageIndex.Value);
+    }
+
+
+}
