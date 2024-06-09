@@ -1,4 +1,5 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@inject IConfiguration Config
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
         <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
@@ -10,3 +11,6 @@
         </LayoutView>
     </NotFound>
 </Router>
+<HeadContent>
+    <base href="/@(Config.GetValue<string>("AppBasePath"))" />
+</HeadContent>
