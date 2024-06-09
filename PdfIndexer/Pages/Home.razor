@@ -12,14 +12,41 @@
 @inject IPdfWriter PdfWriter
 
 <h1>Pdf Indexer</h1>
-<h2>Upload your PDF files</h2>
-<p>Select one or more PDF files to upload and create a word index.</p>
-<InputFile OnChange="AddFiles" multiple/>
+
+<section>
+    <h2>Upload your PDF files</h2>
+    <p>Select one or more PDF files to upload and create a word index.</p>
+    <fieldset>
+        <legend>
+            <p>Options</p>
+        </legend>
+        <p>
+            <label>
+                <InputCheckbox @bind-Value="IgnoreInsignificant" DisplayName="Ignore insignificant words" class="align-middle"/>
+                Ignore insignificant words
+            </label>
+        </p>
+        <hr/>
+        <p>
+            <label class="d-inline text-light">
+                <p>Regex for words</p>
+                <InputText @bind-Value="WordExpressionInput" DisplayName="Word regex" Placeholder="[a-zA-ZäöüÄÖÜß]{3,}" HelpText="Default: [a-zA-ZäöüÄÖÜß]{3,}"/>
+            </label>
+        </p>
+        <hr/>
+        <p>
+            <InputFile OnChange="AddFiles" multiple/>
+        </p>
+    </fieldset>
+</section>
 @if (_wordIndices.Any())
 {
-    <button @onclick="DownloadPdfCombined">Combined Pdf</button>
-    <button @onclick="DownloadPdfIndicesMerged">Pdf with a single total index</button>
-    <section>
+    <fieldset>
+        <legend>
+            <p>Generated Word Indices</p>
+        </legend>
+        <button @onclick="DownloadPdfCombined">Combined Pdf</button>
+        <button @onclick="DownloadPdfIndicesMerged">Pdf with a single total index</button>
         @foreach (var (file, wordIndex) in _wordIndices)
         {
             <details>
@@ -29,11 +56,11 @@
                 <section>
                     <h4>Download</h4>
                     <p class="text-center">
-                        <button @onclick="() => DownloadIndex(file)">PDF</button>
-                        <button @onclick="() => DownloadAppended(file)">Total PDF</button>
-                        <button @onclick="() => DownloadIndexTxt(file)">.txt</button>
-                        <button @onclick="() => DownloadIndexJson(file)">.json</button>
-                        <button @onclick="() => RemoveFile(file)">Remove</button>
+                        <button @onclick="() => DownloadIndex(file)" class="d-inline">PDF</button>
+                        <button @onclick="() => DownloadAppended(file)" class="d-inline">Total PDF</button>
+                        <button @onclick="() => DownloadIndexTxt(file)" class="d-inline">.txt</button>
+                        <button @onclick="() => DownloadIndexJson(file)" class="d-inline">.json</button>
+                        <button @onclick="() => RemoveFile(file)" class="d-inline">Remove</button>
                     </p>
                 </section>
                 <section>
@@ -50,7 +77,7 @@
                 </section>
             </details>
         }
-    </section>
+    </fieldset>
 }
 
 @if (_isLoading)
@@ -62,6 +89,14 @@
     private readonly IDictionary<IBrowserFile, WordIndex> _wordIndices = new Dictionary<IBrowserFile, WordIndex>();
     private readonly PaginationState _pagination = new PaginationState { ItemsPerPage = 10 };
     private bool _isLoading;
+
+    public string? WordExpressionInput { get; set; }
+
+    private string WordExpression => string.IsNullOrEmpty(WordExpressionInput) ? "[a-zA-ZäöüÄÖÜß]{3,}" : WordExpressionInput;
+
+    private Regex WordRegex => new(WordExpression, RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+    public bool IgnoreInsignificant { get; set; } = true;
 
     private async Task InvokeDownload(Stream stream, string fileName)
     {
@@ -111,10 +146,15 @@
             var pages = PdfReader.Read(fileStream);
             foreach (var (pageNumber, text) in pages)
             {
-                var words = new Regex("[a-zA-ZäöüÄÖÜß]{3,}", RegexOptions.Compiled)
+                var words = WordRegex
                     .Matches(text)
-                    .Select(match => match.Value)
-                    .Where(word => !stopWords.Contains(word));
+                    .Select(match => match.Value);
+
+                if (IgnoreInsignificant)
+                {
+                    words = words.Where(word => !stopWords.Contains(word));
+                }
+
                 result.Add(pageNumber, words);
             }
         }

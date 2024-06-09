@@ -1,7 +1,5 @@
 using System.Collections.Immutable;
 using System.Text.Json;
-using System.Text.RegularExpressions;
-using StopWord;
 
 namespace PdfIndexer.Data;
 
