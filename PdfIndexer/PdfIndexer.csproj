@@ -8,7 +8,7 @@
         <RootNamespace>PdfIndexer</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
-        <TrimmableAssembly Include="System.Collections.Immutable" />
+        <TrimmerRootAssembly Include="System.Collections.Immutable" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Docnet.Core" Version="2.6.0" />
