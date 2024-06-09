@@ -215,7 +215,7 @@
     {
         var wordIndex = _wordIndices[file];
         var stream = new MemoryStream();
-        await JsonSerializer.SerializeAsync(stream, wordIndex.Index);
+        await wordIndex.SerializeJson(stream);
         stream.Seek(0, SeekOrigin.Begin);
         var newFileName = Path.GetFileNameWithoutExtension(file.Name) + "-index.json";
         await InvokeDownload(stream, newFileName);
