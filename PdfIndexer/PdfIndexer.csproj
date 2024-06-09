@@ -7,7 +7,9 @@
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
         <RootNamespace>PdfIndexer</RootNamespace>
     </PropertyGroup>
-
+    <ItemGroup>
+        <TrimmableAssembly Include="System.Collections.Immutable" />
+    </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Docnet.Core" Version="2.6.0" />
         <PackageReference Include="dotnet-stop-words" Version="1.1.0" />
