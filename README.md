@@ -1,5 +1,9 @@
 # PdfIndexer
 
+[![.NET](https://github.com/VanDulti/pdf-indexer/actions/workflows/dotnet.yml/badge.svg)](https://github.com/VanDulti/pdf-indexer/actions/workflows/dotnet.yml)
+[![Lint Code Base](https://github.com/VanDulti/pdf-indexer/actions/workflows/super-linter.yml/badge.svg)](https://github.com/VanDulti/pdf-indexer/actions/workflows/super-linter.yml)
+[![Publish & Deploy to Github Pages](https://github.com/VanDulti/pdf-indexer/actions/workflows/pages.yml/badge.svg)](https://github.com/VanDulti/pdf-indexer/actions/workflows/pages.yml)
+
 ## Todo
 
 - [x] Loading time indicators
