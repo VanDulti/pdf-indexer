@@ -26,6 +26,7 @@ jobs:
         dotnet-version: 8.0.x
     - name: Publish
       run: |
+        dotnet workload install wasm-tools
         dotnet publish PdfIndexer --output output
   
     - name: Upload GitHub Pages artifact
