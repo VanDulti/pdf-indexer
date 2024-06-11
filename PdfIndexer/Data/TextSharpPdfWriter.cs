@@ -92,6 +92,7 @@ public class TextSharpPdfWriter : IPdfWriter
         var numberOfColumns = doc.PageSize.Rotation is 90 or 270 ? 8 : 6;
         columns.AddRegularColumns(doc.Left, doc.Right, 2, numberOfColumns);
         columns.Alignment = Element.ALIGN_LEFT;
+        doc.Add(new Paragraph("Index", new Font(Font.HELVETICA, 14, Font.BOLD)));
         foreach (var (word, locations) in wordIndex.Index)
         {
             var line = new Paragraph($"{word}: {string.Join(",", locations)}", IndexFont)
@@ -138,5 +139,7 @@ public class TextSharpPdfWriter : IPdfWriter
         doc.AddAuthor("PdfIndexer");
         doc.AddCreator("PdfIndexer");
         doc.AddKeywords("Indexed PDF document");
+        doc.AddTitle("Indexed PDF document");
+        doc.AddCreationDate();
     }
 }
