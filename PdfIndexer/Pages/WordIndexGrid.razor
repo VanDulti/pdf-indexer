@@ -1,0 +1,21 @@
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using PdfIndexer.Data
+<div>
+    <p>
+        <QuickGrid Items="@Queryable" Pagination="@_pagination">
+            <PropertyColumn Property="@(c => c.Key)"/>
+            <PropertyColumn Property="@(c => string.Join(", ", c.Value))" Align="Align.Right"/>
+        </QuickGrid>
+    </p>
+    <p>
+        <CustomPaginator State="_pagination"/>
+    </p>
+</div>
+
+@code {
+    [Parameter] [EditorRequired] public required WordIndex Value { get; set; }
+
+    private IQueryable<KeyValuePair<string, ISet<int>>> Queryable => Value.Index.AsQueryable();
+
+    private readonly PaginationState _pagination = new PaginationState { ItemsPerPage = 10 };
+}

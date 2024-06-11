@@ -64,15 +64,7 @@
                 </section>
                 <section>
                     <h4>View</h4>
-                    <p>
-                        <QuickGrid Items="@wordIndex.Index.AsQueryable()" Pagination="@_pagination">
-                            <PropertyColumn Property="@(c => c.Key)"/>
-                            <PropertyColumn Property="@(c => string.Join(", ", c.Value))" Align="Align.Right"/>
-                        </QuickGrid>
-                    </p>
-                    <p>
-                        <CustomPaginator State="_pagination"/>
-                    </p>
+                    <WordIndexGrid Value="wordIndex"/>
                 </section>
             </details>
         }
@@ -86,7 +78,6 @@
 
 @code {
     private readonly IDictionary<IBrowserFile, WordIndex> _wordIndices = new Dictionary<IBrowserFile, WordIndex>();
-    private readonly PaginationState _pagination = new PaginationState { ItemsPerPage = 10 };
     private bool _isLoading;
 
     public string? WordExpressionInput { get; set; }
@@ -139,7 +130,9 @@
         await using var fileStream = file.OpenReadStream();
         var result = new WordIndex();
         var stopWordsEn = StopWords.GetStopWords("en");
-        var stopWords = StopWords.GetStopWords().Concat(stopWordsEn).ToImmutableHashSet();
+        var stopWords = StopWords.GetStopWords()
+            .Concat(stopWordsEn)
+            .ToImmutableHashSet();
         try
         {
             var pages = PdfReader.Read(fileStream);
