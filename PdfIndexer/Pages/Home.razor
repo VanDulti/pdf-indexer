@@ -11,6 +11,16 @@
 
 <h1>Pdf Indexer</h1>
 
+<ul class="text-sm-start">
+    <li>🔐 Pdfs are processed entirely & exclusively in your browser => your pdfs stay on your machine.</li>
+    <li>📚 Only the text is extracted from the pdfs, no images or other content.</li>
+    <li>
+        <span class="fw-bold">⚠️ Attention: </span>
+        PDFs are weird, so the text extraction might not be perfect.
+        (In particular, if you know a better pdf library (c#) than iTextSharp that works in the browser, let me know)
+    </li>
+</ul>
+
 <section>
     <h2>Upload your PDF files</h2>
     <p>Select one or more PDF files to upload and create a word index.</p>
@@ -29,9 +39,9 @@
             <label>
                 <InputCheckbox @bind-Value="RemoveLanguageCodes" DisplayName="Remove Language Codes" class="align-middle"/>
                 <span title="Excluded: @(string.Join(", ", IsoLanguageCodes))">
-                    Some PDFs contain weird metadata in the text, like language codes. Enabling this option will remove
-                    most of these codes from the text. This is a bit of a trade-off, as you might lose some words that are
-                    actually part of the text (especially abbreviations like language codes in the text itself).
+                    Some PDFs include weird metadata like language codes in the parsed text. Enabling this option will remove
+                    most of these codes. This is a bit of a trade-off, as you might lose some words that are actually part 
+                    of the text (especially abbreviations like language codes in the text itself).
                 </span>
             </label>
         </p>
