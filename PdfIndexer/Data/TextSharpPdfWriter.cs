@@ -75,8 +75,8 @@ public class TextSharpPdfWriter : IPdfWriter
         {
             var reader = new PdfReader(file);
             AppendPdf(reader, writer, doc);
-            offset += reader.NumberOfPages;
             totalIndex.Add(wordIndex, offset);
+            offset += reader.NumberOfPages;
         }
 
         AppendIndex(totalIndex, doc);
