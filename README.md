@@ -4,6 +4,13 @@
 [![Lint Code Base](https://github.com/VanDulti/pdf-indexer/actions/workflows/super-linter.yml/badge.svg)](https://github.com/VanDulti/pdf-indexer/actions/workflows/super-linter.yml)
 [![Publish & Deploy to Github Pages](https://github.com/VanDulti/pdf-indexer/actions/workflows/pages.yml/badge.svg)](https://github.com/VanDulti/pdf-indexer/actions/workflows/pages.yml)
 
+## What is a word index?
+
+A word index is a list of words that appear in a document, along with the page numbers on which they appear. It is used
+to quickly find where a word appears in a document.
+
+See [Wikipedia]("https://de.wikipedia.org/wiki/Register_(Nachschlagewerk)#Konkordanzen")
+
 ## Todo
 
 - [x] Loading time indicators
@@ -14,9 +21,8 @@
 - [x] Downloading of individual index
 - [x] Downloading of individual PDF with the individual index appended to the end
 - [x] Downloading a total file with the indices appended to the end of the individual presentations
-- [ ] Refactoring PDF parsing and generation logic to interface/class
-    - [ ] Inject via Program.sc
-- [ ] Optimize PDF font size, margins, columns, etc. => get less pages (goal: 
-- [ ] Drag and Drop styling
-- [ ] Write some unit tests
-- [ ]  
+- [x] Refactoring PDF parsing and generation logic to interface/class
+    - [x] Inject via Program.sc
+- [x] Optimize PDF font size, margins, columns, etc. => get less pages (goal:
+- [x] Drag and Drop styling
+- [x] Write some unit tests 

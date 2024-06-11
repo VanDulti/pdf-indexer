@@ -11,13 +11,16 @@ public class TextSharpPdfReader : IPdfReader
         {
             var contentBytes = reader.GetPageContent(pageNumber);
             var tokenizer = new PrTokeniser(new RandomAccessFileOrArray(contentBytes));
-            var tokens = EnumerateTokens(tokenizer);
+            var tokens = tokenizer.EnumerateTokens();
             var text = string.Join("", tokens);
             yield return (pageNumber, text);
         }
     }
+}
 
-    private static IEnumerable<string> EnumerateTokens(PrTokeniser tokeniser)
+public static class TextSharpPdfReaderExtensions
+{
+    internal static IEnumerable<string> EnumerateTokens(this PrTokeniser tokeniser)
     {
         while (tokeniser.NextToken())
         {

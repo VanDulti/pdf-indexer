@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace PdfIndexer.Data;
 
@@ -8,7 +7,6 @@ public class WordIndex
 {
     private readonly SortedDictionary<string, ISet<int>> _index = new();
     
-    [JsonInclude]
     public IImmutableDictionary<string, ISet<int>> Index => _index.ToImmutableSortedDictionary();
 
     public void Add(int pageNumber, IEnumerable<string> words)
