@@ -47,6 +47,17 @@
         </p>
         <hr/>
         <p>
+            <label>
+                <InputCheckbox @bind-Value="RemoveLanguageCodes" DisplayName="Remove Language Codes" class="align-middle"/>
+                <span title="Excluded: @(string.Join(", ", IsoLanguageCodes))">
+                    Some PDFs contain weird metadata in the text, like language codes. Enabling this option will remove
+                    most of these codes from the text. This is a bit of a trade-off, as you might lose some words that are
+                    actually part of the text (especially abbreviations like language codes in the text itself).
+                </span>
+            </label>
+        </p>
+        <hr/>
+        <p>
             <label class="d-inline text-light">
                 <p>Regex for words</p>
                 <InputText @bind-Value="WordExpressionInput" DisplayName="Word regex" Placeholder="[a-zA-ZäöüÄÖÜß]{3,}" HelpText="Default: [a-zA-ZäöüÄÖÜß]{3,}"/>
